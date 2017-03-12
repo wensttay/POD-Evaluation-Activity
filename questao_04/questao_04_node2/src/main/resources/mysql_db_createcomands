@@ -1,0 +1,5 @@
+CREATE DATABASE questao_04;
+
+USE questao_04;
+
+CREATE TABLE users (login VARCHAR(100), password VARCHAR(100));

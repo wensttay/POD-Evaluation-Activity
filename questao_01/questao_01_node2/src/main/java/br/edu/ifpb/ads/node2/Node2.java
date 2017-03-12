@@ -2,7 +2,6 @@ package br.edu.ifpb.ads.node2;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.net.Socket;
 
 /**
  *

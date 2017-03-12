@@ -1,7 +1,7 @@
 package br.edu.ifpb.ads.node2;
 
-import br.edu.ifpb.ads.shared.Configs;
-import br.edu.ifpb.ads.shared.NodeContract;
+import br.edu.ifpb.ads.questao_02_shared.Configs;
+import br.edu.ifpb.ads.questao_02_shared.NodeContract;
 import java.rmi.AccessException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;

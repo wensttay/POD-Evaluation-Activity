@@ -1,7 +1,7 @@
 package br.edu.ifpb.ads.node3;
 
-import br.edu.ifpb.ads.node.shared.SocketUtils;
-import br.edu.ifpb.ads.node.shared.SocketProcotol;
+import br.edu.ifpb.ads.node.questao_01_shared.SocketProcotol;
+import br.edu.ifpb.ads.node.questao_01_shared.SocketUtils;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;

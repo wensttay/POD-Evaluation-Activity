@@ -1,4 +1,4 @@
-package br.edu.ifpb.ads.shared;
+package br.edu.ifpb.ads.questao_03_shared;
 
 import java.util.ArrayList;
 import java.util.List;

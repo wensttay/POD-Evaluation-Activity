@@ -1,6 +1,6 @@
 package br.edu.ifpb.ads.node3;
 
-import br.edu.ifpb.ads.shared.Configs;
+import br.edu.ifpb.ads.questao_02_shared.Configs;
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;

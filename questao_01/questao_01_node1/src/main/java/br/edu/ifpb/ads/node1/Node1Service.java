@@ -1,13 +1,10 @@
 package br.edu.ifpb.ads.node1;
 
-import br.edu.ifpb.ads.node.shared.SocketProcotol;
-import br.edu.ifpb.ads.node.shared.SocketUtils;
+import br.edu.ifpb.ads.node.questao_01_shared.SocketProcotol;
+import br.edu.ifpb.ads.node.questao_01_shared.SocketUtils;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.Socket;
 import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *

@@ -1,5 +1,4 @@
-package br.edu.ifpb.ads.shared;
-
+package br.edu.ifpb.ads.questao_02_shared;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 

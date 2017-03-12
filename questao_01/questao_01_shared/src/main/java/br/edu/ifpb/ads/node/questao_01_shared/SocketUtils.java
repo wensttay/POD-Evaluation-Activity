@@ -1,4 +1,4 @@
-package br.edu.ifpb.ads.node.shared;
+package br.edu.ifpb.ads.node.questao_01_shared;
 
 import java.io.IOException;
 import java.io.InputStream;

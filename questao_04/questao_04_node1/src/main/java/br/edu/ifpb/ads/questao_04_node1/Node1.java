@@ -14,16 +14,16 @@ import java.net.Socket;
 public class Node1 {
 
     public static void main(String[] args) throws IOException {
-        System.out.println("Iniciando Node1 ...");
+        System.out.println("Starting Node1 ...");
 
-        System.out.println("Obtendo coneção com Node2 ...");
+        System.out.println("Connecting to Node2 ...");
         Socket socket = new Socket(Configs.REMOTEHOST_IP, Configs.NODE_2_PORT);
         
-        System.out.println("Enviando um usuario com login e senha para ser cadastrado ...");
+        System.out.println("Sending the request message to Node2 ...");
         String encodeMessage = SocketProcotol.encodeMessage("Wensttay", "Password");
         SocketUtils.sendMessage(socket, encodeMessage);
 
-        System.out.println("Esperando confirmação de Node2 ...");
+        System.out.println("Waiting the answer of request message ...");
         String reciveMessage = SocketUtils.reciveMessage(socket);
         System.out.println("Answer: " + reciveMessage);
         

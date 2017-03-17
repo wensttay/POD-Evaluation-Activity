@@ -17,29 +17,30 @@ import java.net.Socket;
 public class Node2 {
     public static void main(String[] args) throws IOException {
         
-        System.out.println("Iniciando Node2 ...");
+        System.out.println("Starting Node2 ...");
         ServerSocket serverSocket = new ServerSocket(Configs.NODE_2_PORT);
         
-        System.out.println("Aguardando requisição ...");
+        System.out.println("Waiting a client ...");
         Socket socket = serverSocket.accept();
         
-        System.out.println("Processando requisição ...");
+        System.out.println("Processing client request message ...");
         String reciveMessage = SocketUtils.reciveMessage(socket);
         String[] decodeMessage = SocketProcotol.decodeMessage(reciveMessage);
         String login = decodeMessage[0];
         String password = decodeMessage[1];
         User user = new User(login, password);
         
-        System.out.println("Salvando usuario no bando Postgres ...");
+        System.out.println("Saving the message into Postgres BD ...");
         PostgresDao postgresDao = new PostgresDao();
         boolean pgdaoSaved = postgresDao.persist(user);
         
-        System.out.println("Salvando usuario no bando MySql ...");
+        System.out.println("Saving the message into Mysql BD ...");
         MySQLDao mySQLDao = new MySQLDao();
         boolean mysqlSaved = mySQLDao.persist(user);
         
-        System.out.println("Retornando resultado ...");
+        System.out.println("Returning a answer...");
         SocketUtils.sendMessage(socket, pgdaoSaved && mysqlSaved ? "SUCCESS" :  "FAIL");
+        socket.close();
     }
     
 }

@@ -61,7 +61,7 @@ public class Node2Service {
             Socket node3 = new Socket(remoteIP, remotePort);
             SocketUtils.sendMessage(node3, reciveMessage);
 
-            System.out.println("Reading the answer ...");
+            System.out.println("Wait an answer ...");
             finalMessage = SocketUtils.reciveMessage(node3);
             System.out.println("Recived answer: " + finalMessage);
             

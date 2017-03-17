@@ -15,41 +15,43 @@ import java.net.Socket;
 public class Node2 {
 
     public static void main(String[] args) throws IOException {
-        
-        System.out.println("Iniciando Node2 ...");
+
+        System.out.println("Starting Node2 ...");
         ServerSocket serverSocket = new ServerSocket(Configs.NODE_2_PORT);
-        
-        System.out.println("Aguardando requisição ...");
-        Socket clientNode = serverSocket.accept();
-        String reciveMessage = SocketUtils.reciveMessage(clientNode);
-        String[] decodeMessage = SocketProcotol.decodeMessage(reciveMessage);
-        
-        System.out.println("Formulando requisição ...");
-        Socket nodeDestiny = null;
-        if (decodeMessage.length == 3) {
-            if (decodeMessage[1].equals("sum")) {
-                nodeDestiny = new Socket(Configs.LOCALHOST_IP, Configs.NODE_4_PORT);
-            } else if (decodeMessage[1].equals("diff")) {
-                nodeDestiny = new Socket(Configs.LOCALHOST_IP, Configs.NODE_3_PORT);
+
+        while (true) {
+            System.out.println("Waiting a client ...");
+            Socket clientNode = serverSocket.accept();
+            String reciveMessage = SocketUtils.reciveMessage(clientNode);
+            String[] decodeMessage = SocketProcotol.decodeMessage(reciveMessage);
+
+            System.out.println("Selecting a Node to the operation ...");
+            Socket nodeDestiny = null;
+            if (decodeMessage.length == 3) {
+                if (decodeMessage[1].equals("sum")) {
+                    System.out.println("Nodo4 selected");
+                    nodeDestiny = new Socket(Configs.LOCALHOST_IP, Configs.NODE_4_PORT);
+                } else if (decodeMessage[1].equals("diff")) {
+                    System.out.println("Nodo3 selected");
+                    nodeDestiny = new Socket(Configs.LOCALHOST_IP, Configs.NODE_3_PORT);
+                }
             }
+
+            if (nodeDestiny != null) {
+                System.out.println("Sending the request message to selected Node ...");
+                SocketUtils.sendMessage(nodeDestiny, reciveMessage);
+
+                System.out.println("Waiting the answer of request message ...");
+                String msg = SocketUtils.reciveMessage(nodeDestiny);
+
+                System.out.println("Returning the redirected answer to the client ...");
+                SocketUtils.sendMessage(clientNode, msg);
+
+            } else {
+                System.out.println("This pperation has not registred");
+            }
+            
+            clientNode.close();
         }
-        
-        System.out.println("Dados recebidos:");
-        for (String string : decodeMessage) {
-            System.out.println(string);
-        }
-        
-        if(nodeDestiny == null){
-            return;
-        }
-        
-        System.out.println("Redirecionando requisição ...");
-        SocketUtils.sendMessage(nodeDestiny, reciveMessage);
-        
-        System.out.println("Aguarando resposta ...");
-        String msg = SocketUtils.reciveMessage(nodeDestiny);
-        
-        System.out.println("Retornando resposta redirecionada ao requisitor ...");
-        SocketUtils.sendMessage(clientNode, msg);
     }
 }

@@ -2,54 +2,70 @@ package br.edu.ifpb.ads.node3;
 
 import br.edu.ifpb.ads.questao_02_shared.Configs;
 import br.edu.ifpb.ads.questao_02_shared.NodeContract;
-import java.rmi.AccessException;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
+import br.edu.ifpb.ads.questao_02_shared.SocketProcotol;
+import br.edu.ifpb.ads.questao_02_shared.SocketUtils;
+import java.net.Socket;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author Wensttay de Sousa Alencar <yattsnew@gmail.com>
  * @date 10/03/2017, 23:56:15
  */
-public class Node3Impl extends UnicastRemoteObject implements NodeContract {
+public class Node3Impl implements NodeContract {
 
-    public Node3Impl() throws RemoteException {
+    public Node3Impl() {
     }
 
     @Override
-    public int sum(int x, int y) throws RemoteException {
-        try {
-            System.out.println("Conectando ao Node1 ...");
-            Registry registry = LocateRegistry.getRegistry(Configs.REMOTEHOST_IP, Configs.NODE_1_PORT);
-            NodeContract contract = (NodeContract) registry.lookup(Configs.NODE_1_NAME);
-            
-            System.out.println("Redirecionando o processamento de diferença para o Node1 ...");
-            return contract.sum(x, y);
-        } catch (NotBoundException | AccessException ex) {
-            System.out.println("Não foi possivel encontrar Node1");
-        }
+    public String sum(int x, int y) {
 
         try {
-            System.out.println("Conectando ao Node2 ...");
-            Registry registry = LocateRegistry.getRegistry(Configs.REMOTEHOST_IP, Configs.NODE_2_PORT);
-            NodeContract contract = (NodeContract) registry.lookup(Configs.NODE_2_NAME);
-            
-            System.out.println("Redirecionando o processamento de diferença para o Node2 ...");
-            return contract.sum(x, y);
-        } catch (NotBoundException | AccessException ex) {
-            System.out.println("Não foi possivel encontrar Node2");
-        }
+            Socket socket = null;
 
-        throw new RemoteException("Não foi possivel encontrar Node1 e Node2");
+            try {
+                System.out.println("Trying to Connect to Node1 ...");
+                socket = new Socket(Configs.LOCALHOST_IP, Configs.NODE_1_PORT);
+            } catch (IOException ex) {
+                System.out.println("[WARN] Cannot be connected to node1.");
+            }
+
+            if (socket == null) {
+                try {
+                    System.out.println("Trying to Connect to Node2 ...");
+                    socket = new Socket(Configs.LOCALHOST_IP, Configs.NODE_2_PORT);
+                } catch (IOException ex) {
+                    System.out.println("[WARN] Cannot be connected to node2.");
+                }
+            }
+
+            if (socket == null) {
+                return "[ERROR] Connection declined";
+            }
+
+            String encodeMessage = SocketProcotol.encodeMessage(x, "sum", y);
+
+            System.out.println("Repassing the message to seleced Node ...");
+            SocketUtils.sendMessage(socket, encodeMessage);
+
+            System.out.println("Wait an answer ...");
+            String reciveMessage = SocketUtils.reciveMessage(socket);
+
+            socket.close();
+
+            return reciveMessage;
+        } catch (IOException ex) {
+            Logger.getLogger(Node3Impl.class.getName()).log(Level.SEVERE, null, ex);
+            return "[ERROR] Connection defused";
+        }
     }
 
     @Override
-    public int diff(int x, int y) throws RemoteException {
-        System.out.println("Obtendo a diferença dos números " + x + " e " + y + " ...");
-        return x - y;
+    public String diff(int x, int y) {
+        System.out.println("Processing the diff between the values " + x + " and " + y + " ...");
+        return "" + (x - y);
     }
 
 }

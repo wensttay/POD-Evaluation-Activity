@@ -6,7 +6,9 @@ package br.edu.ifpb.ads.questao_03_shared;
  * @date 11/03/2017, 03:19:36
  */
 public class Configs {
+    // Used when needs to connect remote service like a client
     public static final String REMOTEHOST_IP = "localhost";
+    // Used to operate as local service
     public static final String LOCALHOST_IP = "localhost";
     
     public static final int NODE_2_PORT = 10992;

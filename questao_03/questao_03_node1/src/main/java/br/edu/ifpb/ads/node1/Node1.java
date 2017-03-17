@@ -13,42 +13,39 @@ import java.util.Scanner;
  * @date 11/03/2017, 03:34:28
  */
 public class Node1 {
-    
+
     public static void main(String[] args) throws IOException {
-        
-        Scanner scanner = new Scanner(System.in);
-        
-        System.out.println("Digite o primeiro valor: ");
-        int x = scanner.nextInt();
-        
-        System.out.println("Digite a operação desejada: ");
-        String op = scanner.next();
-        
-        System.out.println("Digite o segundo valor: ");
-        int y = scanner.nextInt();
-        
-        System.out.println("Formulando requisição ...");
+
+        System.out.println("Starting Node1 ...");
+
+        int x = 100, y = 40;
+//        String op = "sum";
+        String op = "diff";
+
+        System.out.println("Selecting a Node to the operation ...");
         Socket node = null;
+
         if (op.equals("sum")) {
+            System.out.println("Nodo3 selected");
             node = new Socket(Configs.REMOTEHOST_IP, Configs.NODE_3_PORT);
         } else if (op.equals("diff")) {
+            System.out.println("Nodo2 selected");
             node = new Socket(Configs.REMOTEHOST_IP, Configs.NODE_2_PORT);
-        }else{
-            System.out.println("Não foi encontrado um servidor para essa operação");
         }
-        
-        if (node == null) {
-            return;
+
+        if (node != null) {
+            System.out.println("Encoding Message ...");
+            String encodeMessage = SocketProcotol.encodeMessage(x, op, y);
+
+            System.out.println("Sending the request message to selected Node ...");
+            SocketUtils.sendMessage(node, encodeMessage);
+
+            System.out.println("Waiting the answer of request message ...");
+            String reciveMessage = SocketUtils.reciveMessage(node);
+
+            System.out.println("Answer: " + reciveMessage);
+        } else {
+            System.out.println("There are not any Node to this operation ...");
         }
-        String encodeMessage = SocketProcotol.encodeMessage(x, op, y);
-        
-        System.out.println("Enviando requisição ...");
-        SocketUtils.sendMessage(node, encodeMessage);
-        
-        System.out.println("Aguardando resultado ...");
-        String reciveMessage = SocketUtils.reciveMessage(node);
-        
-        System.out.println("Resultado: " + reciveMessage);
-        
     }
 }

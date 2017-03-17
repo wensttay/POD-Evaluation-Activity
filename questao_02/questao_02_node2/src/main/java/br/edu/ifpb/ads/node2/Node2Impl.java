@@ -1,41 +1,51 @@
 package br.edu.ifpb.ads.node2;
 
+
 import br.edu.ifpb.ads.questao_02_shared.Configs;
 import br.edu.ifpb.ads.questao_02_shared.NodeContract;
-import java.rmi.AccessException;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
+import br.edu.ifpb.ads.questao_02_shared.SocketProcotol;
+import br.edu.ifpb.ads.questao_02_shared.SocketUtils;
+import java.net.Socket;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author Wensttay de Sousa Alencar <yattsnew@gmail.com>
  * @date 10/03/2017, 23:56:15
  */
-public class Node2Impl extends UnicastRemoteObject implements NodeContract {
-
-    public Node2Impl() throws RemoteException {
+public class Node2Impl implements NodeContract{
+    
+    public Node2Impl(){
+    }
+    
+    @Override
+    public String sum(int x, int y){
+        System.out.println("Processing the sum between the values " + x + " and " + y + " ...");
+        return "" + (x + y);
     }
 
     @Override
-    public int sum(int x, int y) throws RemoteException {
-        System.out.println("Obtendo a soma dos números " + x + " e " + y + " ...");
-        return x + y;
-    }
-
-    @Override
-    public int diff(int x, int y) throws RemoteException {
+    public String diff(int x, int y){
         try {
-            System.out.println("Conectando ao Node3 ...");
-            Registry registry = LocateRegistry.getRegistry(Configs.REMOTEHOST_IP, Configs.NODE_3_PORT);
-            NodeContract contract = (NodeContract) registry.lookup(Configs.NODE_3_NAME);
-
-            System.out.println("Redirecionando o processamento de diferença para o Node3 ...");
-            return contract.diff(x, y);
-        } catch (NotBoundException | AccessException ex) {
-            throw new RemoteException("Não foi possivel encontrar Node3");
+            System.out.println("Connecting to Node3 ...");
+            Socket socket = new Socket(Configs.LOCALHOST_IP, Configs.NODE_3_PORT);
+            String encodeMessage = SocketProcotol.encodeMessage(x, "diff", y);
+            
+            System.out.println("Repassing the message to Node3 ...");
+            SocketUtils.sendMessage(socket, encodeMessage);
+            
+            System.out.println("Wait an answer ...");
+            String reciveMessage = SocketUtils.reciveMessage(socket);
+            
+            socket.close();
+            return reciveMessage;
+        } catch (IOException ex) {
+            Logger.getLogger(Node2Impl.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+        return "[ERROR]";
     }
-}
+
+}   

@@ -26,17 +26,16 @@ public class Main {
         // To change the Node to connect, just change this method, like this:
         // To change for Node2 change "connectToNode1();" to "connectToNode2();"
 //        Socket socketNode = connectToNode1();
-//        Socket socketNode = connectToNode2();
-        Socket socketNode = connectToNode3();
+        Socket socketNode = connectToNode2();
+//        Socket socketNode = connectToNode3();
 
         System.out.println("Encoding a request message ...");
-        String encodeMessage = SocketProcotol.encodeMessage(10, "sum", 40);
-//        String encodeMessage = SocketProcotol.encodeMessage(50, "diff", 5);
+//        String encodeMessage = SocketProcotol.encodeMessage(10, "sum", 40);
+        String encodeMessage = SocketProcotol.encodeMessage(50, "diff", 5);
         System.out.println("EncodeMessage: " + encodeMessage);
 
         System.out.println("Sending the request message to selected Node ...");
         SocketUtils.sendMessage(socketNode, encodeMessage);
-//        SocketUtils.sendMessage(socketNode, encodeMessage);
 
         System.out.println("Waiting the answer of request message ...");
         String reciveMessage = SocketUtils.reciveMessage(socketNode);

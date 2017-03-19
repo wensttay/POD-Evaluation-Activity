@@ -34,3 +34,19 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 /target/
+/questao_01 (cópia)/questao_01_node1/target/
+/questao_01 (cópia)/questao_01_node2/target/
+/questao_01 (cópia)/questao_01_node3/target/
+/questao_01 (cópia)/questao_01_shared/target/
+/questao_07/questao_01_node1/target/
+/questao_07/questao_01_node2/target/
+/questao_07/questao_01_node3/target/
+/questao_07/questao_01_shared/target/
+/questao_05 (cópia)/questao_05_docker/target/
+/questao_05 (cópia)/questao_05_node0/target/
+/questao_05 (cópia)/questao_05_node1/target/
+/questao_05 (cópia)/questao_05_node2/target/
+/questao_07/questao_07_node1/target/
+/questao_07/questao_07_node2/target/
+/questao_07/questao_07_node3/target/
+/questao_07/questao_07_shared/target/

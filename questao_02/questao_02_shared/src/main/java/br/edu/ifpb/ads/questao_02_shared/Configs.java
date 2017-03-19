@@ -11,6 +11,7 @@ public class Configs {
     public static final String REMOTEHOST_IP = "localhost";
     // Used to operate as local service
     public static final String LOCALHOST_IP = "localhost";
+    public static final String ERROR_IP = "192.168.0.000";
     
     public static final int NODE_1_PORT = 10991;
     public static final int NODE_2_PORT = 10992;

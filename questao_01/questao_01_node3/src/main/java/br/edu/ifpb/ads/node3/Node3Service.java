@@ -3,6 +3,7 @@ package br.edu.ifpb.ads.node3;
 import br.edu.ifpb.ads.node.questao_01_shared.SocketProcotol;
 import br.edu.ifpb.ads.node.questao_01_shared.SocketUtils;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
@@ -19,7 +20,7 @@ public class Node3Service {
     public Node3Service(ServerSocket serverSocket) {
         this.serverSocket = serverSocket;
     }
-    
+
     public void run() throws IOException {
         System.out.println("Waiting a connection ...");
         Socket node2 = serverSocket.accept();
@@ -31,15 +32,18 @@ public class Node3Service {
 
         System.out.println("Processing the message ...");
         List<Integer> integers = SocketProcotol.decodeMessage(reciveMessage);
-        
+
         Integer x = integers.get(0);
         Integer y = integers.get(1);
-        
+
         System.out.println("Computing the Answer ...");
-        Double result =  Math.pow(x,y) + Math.pow(y,x);
-        String answer = "" + result.longValue();
+        BigDecimal xToY = new BigDecimal(x).pow(y);
+        BigDecimal yToX = new BigDecimal(y).pow(x);
+
+        BigDecimal result = xToY.add(yToX);
+        String answer = "" + result.toString();
         System.out.println("Answer: " + answer);
-        
+
         System.out.println("Return the answer to Node2 ...");
         SocketUtils.sendMessage(node2, answer);
     }

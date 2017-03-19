@@ -1,11 +1,12 @@
 package br.edu.ifpb.ads.questao_05_node1;
 
-import br.edu.ifpb.ads.questao_05_shared.Configs;
-import br.edu.ifpb.ads.questao_05_shared.SocketProcotol;
-import br.edu.ifpb.ads.questao_05_shared.SocketUtils;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 
 /**
  *
@@ -14,25 +15,63 @@ import java.net.Socket;
  */
 public class Node1 {
 
-    public static void main(String[] args) throws IOException {
-        System.out.println("Inciando Node1 ...");
-        ServerSocket serverSocket = new ServerSocket(Configs.NODE_1_PORT);
-        
-        System.out.println("Aguandando Requsição ...");
-        Socket clientNode = serverSocket.accept();
-        
-        System.out.println("Processando Requisição ...");
-        String reciveMessage = SocketUtils.reciveMessage(clientNode);
-        String[] decodeMessage = SocketProcotol.decodeMessage(reciveMessage);
-        int result = 0;
-        if (decodeMessage.length == 3) {
-            int x = Integer.parseInt(decodeMessage[0]);
-            int y = Integer.parseInt(decodeMessage[2]);
+    public static void main(String[] args) throws IOException, InterruptedException {
+        System.out.println("Startando Node1 ...");
 
-            result = x + y;
+        Path pathToWrite = Paths.get("/opt/app/shared/sum.txt");
+        boolean notDone = true;
+        
+        while (notDone) {
+            System.out.println("Reding the file ...");
+            List<String> readAllLines = Files.readAllLines(pathToWrite);
+
+            int lineWithAnswer = 3;
+            int sum = 0;
+
+            System.out.println("Cheking is has some operation sum on file ...");
+            String outPutOperation = "Operation detected: ";
+            boolean hasOperation = false;
+
+            for (int i = 0; i < readAllLines.size(); i++) {
+                if (((i + 1) % lineWithAnswer) == 0) {
+
+                    if (readAllLines.get(i).equals("") || readAllLines.get(i).equals("\n")) {
+                        readAllLines.set(i, "" + sum);
+                        
+                        outPutOperation += "= " + sum;
+                        System.out.println(outPutOperation);
+                        hasOperation = true;
+                    }
+                    
+                    outPutOperation = "";
+                    sum = 0;
+                
+                } else {
+                    if (!(readAllLines.get(i).equals("") || readAllLines.get(i).equals("\n"))) {
+                        outPutOperation += readAllLines.get(i) + " + ";
+                        sum += Integer.parseInt(readAllLines.get(i));
+                    }
+                }
+            }
+            
+            if (hasOperation) {
+                Files.write(pathToWrite, readAllLines);
+                System.out.println("");
+                System.out.println("File with operation answer: ");
+                System.out.println(">>> START <<<");
+                printFile(pathToWrite);
+                System.out.println(">>> END <<<");
+                notDone = false;
+            }
+            
+            Thread.sleep(3000);
         }
-        System.out.println("Resultado: " + result);
-        System.out.println("Retornando resultado ...");
-        SocketUtils.sendMessage(clientNode, "" + result);
+    }
+
+    private static void printFile(Path pathToWrite) throws IOException {
+        List<String> readAllLines = Files.readAllLines(pathToWrite);
+        for (String readAllLine : readAllLines) {
+            System.out.println(readAllLine);
+        }
     }
 }

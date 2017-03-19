@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 public class Node2 {
 
     public static void main(String[] args) {
+        //my name is node2
 
         Node2Impl node2Impl = new Node2Impl();
         try {

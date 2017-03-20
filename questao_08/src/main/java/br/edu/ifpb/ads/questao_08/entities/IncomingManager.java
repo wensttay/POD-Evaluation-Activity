@@ -6,7 +6,8 @@ package br.edu.ifpb.ads.questao_08.entities;
  * @date 19/03/2017, 15:25:54
  */
 public class IncomingManager {
-
+    
+    private int peopleId = 0;
     private int entryCount = 0;
     private int entryFails = 0;
     private final Queue[] queue;
@@ -16,7 +17,7 @@ public class IncomingManager {
     }
 
     public People createNewPeople() {
-        return new People(++entryCount);
+        return new People(++peopleId);
     }
 
     public void exec(XGeneratior xGeneratior) {
@@ -29,6 +30,8 @@ public class IncomingManager {
                         People people = createNewPeople();
                         if (!q.push(people)) {
                             ++entryFails;
+                        }else{
+                            ++entryCount;
                         }
                     }
                 }

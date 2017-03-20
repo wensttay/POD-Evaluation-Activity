@@ -25,8 +25,6 @@ public class Attendant {
             if (pop != null) {
                 entryOne = true;
                 attending++;
-            } else {
-                break;
             }
         }
         return entryOne;

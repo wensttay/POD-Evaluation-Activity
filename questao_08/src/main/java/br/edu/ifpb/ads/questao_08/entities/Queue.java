@@ -19,13 +19,13 @@ public class Queue {
     }
 
     private void organize() {
-        if (peoples.length >= 2) {
+//        if (peoples.length >= 1) {
             for (int i = 1; i < peoples.length; i++) {
                 People p = peoples[i];
                 peoples[i - 1] = p;
             }
             peoples[peoples.length - 1] = null;
-        }
+//        }
     }
 
     public boolean push(People p) {

@@ -9,95 +9,134 @@ import br.edu.ifpb.ads.questao_08.strategy.Strategy;
  */
 public class Engine {
 
-    private final Queue queue;
+    private final Chronometer chronometer;
+    private final XGeneratior xGeneratior;
+    private final QueueEngine[] queueEngines;
     private final IncomingManager incomingManager;
-    private final Attendant[] attendants;
 
-    public Engine(Queue queue, IncomingManager incomingManager, Attendant... attendant) {
-        this.queue = queue;
+    public Engine(Chronometer chronometer, XGeneratior xGeneratior, IncomingManager incomingManager, QueueEngine... queueEngines) {
+        this.chronometer = chronometer;
+        this.xGeneratior = xGeneratior;
         this.incomingManager = incomingManager;
-        this.attendants = attendant;
+        this.queueEngines = queueEngines;
     }
 
-    private void waitASecond(Object locker) {
-        synchronized (locker) {
-            try {
-                locker.wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+    public void exec() {
+        System.out.println("[ENGINE] Starting Engine ...");
+        chronometer.exec();
+        xGeneratior.exec(chronometer);
+
+        entryControll();
+
+        for (QueueEngine queueEngine : queueEngines) {
+            queueEngine.exec(xGeneratior, chronometer);
         }
     }
 
-    public void entryControll(XGeneratior xGeneratior, Chronometer chronometer, Object locker) {
-        System.out.println("[ENTRYCONTROLL] Starting a EntryControll ...");
+    private void entryControll() {
+        System.out.println("[ENTRYCONTROLL} Starting entryControll ...");
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
                 while (!chronometer.isIsFinished()) {
-                    waitASecond(locker);
-                    System.out.println("[ENTRYCONTROLL] Trying to entry with more peoples in Queue ...");
-                    incomingManager.exec(xGeneratior);
+                    chronometer.waitASecond();
+                    incomingManager.exec(xGeneratior, queueEngines);
                 }
             }
         };
-        //
+
         Thread t1 = new Thread(runnable);
         t1.start();
     }
 
-    private void attendanceControll(XGeneratior xGeneratior, Chronometer chronometer, Strategy strategy, Object locker) {
-        System.out.println("[ATTENDANCECONTROLL] Starting a AttendenceControll ...");
-        Runnable r2 = new Runnable() {
-            @Override
-            public void run() {
+    public XGeneratior getxGeneratior() {
+        return xGeneratior;
+    }
 
-                while (!chronometer.isIsFinished()) {
-                    System.out.println("[ATTENDANCECONTROLL] Cheking if the Attendants are disponible now ...");
-                    waitASecond(locker);
-                    int atteToTry = attendants.length;
-                    
-                    for (Attendant att : attendants) {
-                        // Atende de forma sequencia :/
-                        if (!att.startService(xGeneratior, strategy)) {
-                            --atteToTry;
-                        }
-                    }
+    public Chronometer getChronometer() {
+        return chronometer;
+    }
 
-                    if (atteToTry == 0) {
-                        System.out.println("[ATTENDANCECONTROLL] The Attendants are occupade now ...");
-                        continue;
-                    }
+    public QueueEngine[] getQueueEngines() {
+        return queueEngines;
+    }
 
-                    if (!chronometer.isIsFinished()) {
-                        waitASecond(locker);
-                        for (Attendant att : attendants) {
-                            att.stopService();
-                        }
-                    }
-                }
+    public void printResult() throws InterruptedException {
+        
+        synchronized (chronometer.getFinlizedLocker()) {
+            chronometer.getFinlizedLocker().wait();
+        }
+        System.out.println("");
+        System.out.println("------------------------------RESULTS------------------------------");
+        System.out.println("");
+        System.out.println("A) Quantas pessoas entraram na fila?");
+        int totalEntryCount = 0;
+        for (QueueEngine queueEngine : queueEngines) {
+            Queue queue = queueEngine.getQueue();
+            totalEntryCount += queue.getEntryCount();
+            System.out.printf("> %d pessoas entraram na fila %s.\n",
+                    queue.getEntryCount(),
+                    queue.getId());
+        }
+        System.out.printf("Totalizando: %d pessoas.\n", totalEntryCount);
+        System.out.println("");
+        
+        System.out.println("B) Quantas pessoas foram embora antes de entrar na fila (ocorre quando a fila está cheia)?");
+        int totalNotEntryCount = 0;
+        for (QueueEngine queueEngine : queueEngines) {
+            Queue queue = queueEngine.getQueue();
+            totalNotEntryCount += queue.getEntryFail();
+            System.out.printf("> %d pessoas não entram na fila %s.\n",
+                    queue.getEntryFail(),
+                    queue.getId());
+        }
+        System.out.printf("Totalizando: %d pessoas.\n", totalNotEntryCount);
+        System.out.println("");
+
+        System.out.println("C) Quantas pessoas foram atendidas?");
+        int totalAttended = 0;
+        for (QueueEngine queueEngine : queueEngines) {
+            Queue queue = queueEngine.getQueue();
+            Attendant[] attendants = queueEngine.getAttendants();
+
+            for (Attendant attendant : attendants) {
+                System.out.printf("> %d pessoas foram atendidas por %s na fila %s.\n",
+                        attendant.getAttendedCount(),
+                        attendant.getName(),
+                        queue.getId());
+                totalAttended += attendant.getAttendedCount();
             }
-        };
-        //
-        Thread t2 = new Thread(r2);
-        t2.start();
-    }
+        }
+        System.out.printf("Totalizando: %d pessoas.\n", totalAttended);
+        System.out.println("");
+        
+        System.out.println("D) Quantas pessoas ficaram na fila?");
+        int totalInerQueue = 0;
+        for (QueueEngine queueEngine : queueEngines) {
+            Queue queue = queueEngine.getQueue();
+            totalInerQueue += queue.getOccupiedSize();
+            System.out.printf("> %d pessoas continuaram na fila %s.\n",
+                    queue.getOccupiedSize(),
+                    queue.getId());
+        }
+        System.out.printf("Totalizando: %d pessoas.\n", totalInerQueue);
+        System.out.println("");
+        
+        System.out.println("------------------------------EXTRA-INFO------------------------------");
+        int totalEmAtendimento = 0;
+        for (QueueEngine queueEngine : queueEngines) {
+            Queue queue = queueEngine.getQueue();
+            Attendant[] attendants = queueEngine.getAttendants();
 
-    public void exec(XGeneratior xGeneratior, Chronometer chronometer, Strategy H_Strategy, Object locker) {
-        System.out.println("[ENGENE] Estarting a Queue Engine ...");
-        entryControll(xGeneratior, chronometer, locker);
-        attendanceControll(xGeneratior, chronometer, H_Strategy, locker);
-    }
-
-    public Queue getQueue() {
-        return queue;
-    }
-
-    public IncomingManager getIncomingManager() {
-        return incomingManager;
-    }
-
-    public Attendant[] getAttendants() {
-        return attendants;
+            for (Attendant attendant : attendants) {
+                System.out.printf("> %d pessoas estavam sendo atendidas por %s na fila %s.\n",
+                        attendant.getAttending(),
+                        attendant.getName(),
+                        queue.getId());
+                totalEmAtendimento += attendant.getAttending();
+            }
+        }
+        System.out.printf("Totalizando: %d pessoas.\n", totalEmAtendimento);
+        System.out.println("");
     }
 }

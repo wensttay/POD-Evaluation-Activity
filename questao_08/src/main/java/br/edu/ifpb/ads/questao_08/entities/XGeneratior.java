@@ -1,8 +1,5 @@
 package br.edu.ifpb.ads.questao_08.entities;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
  *
  * @author Wensttay de Sousa Alencar <yattsnew@gmail.com>
@@ -15,25 +12,19 @@ public class XGeneratior {
     public XGeneratior() {
     }
 
-    public void exec(Chronometer chronometer, Object locker) {
-        System.out.println("Starting XGeneratior ...");
-        Runnable runnable = new Runnable() {
+    public void exec(Chronometer chronometer) {
+        new Thread(new Runnable() {
             @Override
             public void run() {
+                System.out.println("[XGENERATIOR] Starting xGeneratior ...");
                 while (!chronometer.isIsFinished()) {
-                    synchronized (locker) {
-                        try {
-                            locker.wait();
-                        } catch (InterruptedException ex) {
-                            System.out.println("[ERROR] Error on XGeneratior");
-                        }
+                    synchronized (chronometer.getLocker()) {
+                        chronometer.waitASecond();
                         XValue = Math.random();
                     }
                 }
             }
-        };
-        Thread xThread = new Thread(runnable);
-        xThread.start();
+        }).start();
     }
 
     public double getXValue() {

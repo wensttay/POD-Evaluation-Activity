@@ -9,35 +9,52 @@ import br.edu.ifpb.ads.questao_08.strategy.Strategy;
  */
 public class Attendant {
 
+    private final Strategy attendantStrategy;
+    private final String name;
     private int attendedCount = 0;
     private int attending = 0;
-    private final Queue queue;
 
-    public Attendant(Queue queue) {
-        this.queue = queue;
+    public Attendant(String name, Strategy attendantStrategy) {
+        this.name = name;
+        this.attendantStrategy = attendantStrategy;
     }
 
-    public boolean startService(XGeneratior xGeneratior, Strategy strategy) {
-        int peoplesPerSeccound = strategy.gerate(xGeneratior);
-        boolean entryOne = false;
+    public void startService(Queue queue, XGeneratior xGeneratior) {
+        int peoplesPerSeccound = attendantStrategy.gerate(xGeneratior);
+
         for (int i = 0; i < peoplesPerSeccound; i++) {
-            People pop = this.queue.pop();
+            People pop = queue.pop();
             if (pop != null) {
-                entryOne = true;
                 attending++;
             }
         }
-        return entryOne;
     }
 
     public void stopService() {
-        if (attending != 0) {
+        if (isAttending()) {
             attendedCount += attending;
             attending = 0;
         }
     }
 
+    public boolean isAttending() {
+        return attending > 0 ? true : false;
+    }
+
+    public String getName() {
+        return name;
+    }
+
     public int getAttendedCount() {
         return attendedCount;
     }
+
+    public int getAttending() {
+        return attending;
+    }
+
+    public Strategy getAttendantStrategy() {
+        return attendantStrategy;
+    }
+
 }

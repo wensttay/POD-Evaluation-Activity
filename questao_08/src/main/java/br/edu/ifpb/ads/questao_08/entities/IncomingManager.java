@@ -6,45 +6,33 @@ package br.edu.ifpb.ads.questao_08.entities;
  * @date 19/03/2017, 15:25:54
  */
 public class IncomingManager {
-    
-    private int peopleId = 0;
-    private int entryCount = 0;
-    private int entryFails = 0;
-    private final Queue[] queue;
 
-    public IncomingManager(Queue... queue) {
-        this.queue = queue;
-    }
+    private int entryCode = 0;
 
     public People createNewPeople() {
-        return new People(++peopleId);
+        return new People("People" + (++entryCode));
     }
 
-    public void exec(XGeneratior xGeneratior) {
-        for (Queue q : queue) {
+    public void exec(XGeneratior xGeneratior, QueueEngine...queueEngines) {
+        
+        for (QueueEngine queueEngine : queueEngines) {
             new Thread(new Runnable() {
                 @Override
-                public void run() {
-                    int n = q.getStrategy().gerate(xGeneratior);
+                public void run() {            
+                    int n = queueEngine.getQueue()
+                            .getStrategy()
+                            .gerate(xGeneratior);
                     for (int i = 0; i < n; i++) {
                         People people = createNewPeople();
-                        if (!q.push(people)) {
-                            ++entryFails;
-                        }else{
-                            ++entryCount;
-                        }
+                        queueEngine.getQueue().push(people);
                     }
                 }
             }).start();
         }
     }
 
-    public int getEntryCount() {
-        return entryCount;
-    }
-
-    public int getEntryFails() {
-        return entryFails;
+    public int getEntryCode() {
+        return entryCode;
     }
 
 }

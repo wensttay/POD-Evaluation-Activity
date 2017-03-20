@@ -6,17 +6,17 @@ package br.edu.ifpb.ads.questao_08.entities;
  * @date 19/03/2017, 15:24:30
  */
 public class People {
-    private int entryCode;
+    private String name;
 
-    public People(int entryCode) {
-        this.entryCode = entryCode;
+    public People(String name) {
+        this.name = name;
     }
 
-    public int getEntryCode() {
-        return entryCode;
+    public String getName() {
+        return name;
     }
 
-    public void setEntryCode(int entryCode) {
-        this.entryCode = entryCode;
+    public void setName(String name) {
+        this.name = name;
     }
 }
